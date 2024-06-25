@@ -1,0 +1,39 @@
+# %% [code] {"jupyter":{"outputs_hidden":false}}
+# Проверяем наличие видеокарты в блокноте
+
+!nvidia-smi
+
+# %% [code] {"jupyter":{"outputs_hidden":false}}
+# Проверяем версию Python
+
+!/opt/conda/bin/python --version
+
+# %% [code] {"jupyter":{"outputs_hidden":false}}
+# Установка зависимостей
+
+!pip install -U --no-warn-script-location so-vits-svc-fork > /dev/null
+!cd /kaggle/working > /dev/null
+
+# %% [code] {"jupyter":{"outputs_hidden":false}}
+!mkdir -p "dataset_raw_raw"
+!mkdir -p "dataset_raw"
+!rm -r "dataset"
+!cp -R /kaggle/input/DATASETNAME/ -t "dataset_raw_raw/"
+
+# %% [code] {"jupyter":{"outputs_hidden":false}}
+# Предобработка датасета (скипнуть если уже выполнили)
+
+!svc pre-resample -i "dataset_raw_raw/"
+!svc pre-config
+!svc pre-hubert
+
+# %% [code] {"scrolled":true,"jupyter":{"outputs_hidden":false}}
+# Запуск тренировки
+
+!svc train --model-path logs/44k
+
+# %% [code] {"jupyter":{"outputs_hidden":false}}
+!zip -r logs.zip logs/
+from IPython.display import FileLink
+
+FileLink(r'logs.zip')
